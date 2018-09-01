@@ -1,0 +1,54 @@
+ private void SignUpSubmitActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_SignUpSubmitActionPerformed
+        // TODO add your handling code here:
+        String uname=username.getText();
+        String cpass=confpass.getText();
+        String Pass=pass.getText();
+        String fname=FullName.getText();
+        String Email=email.getText();
+        try{
+            if(uname.compareTo("admin")==0)
+            {
+                JOptionPane.showMessageDialog(null,"You Can't Take this username\nChoose Another username");
+            }
+            else
+            {
+                Class.forName("com.mysql.jdbc.Driver");  
+                String conarg="jdbc:mysql://";
+        conarg+=Home.Saddress;
+        conarg+=":3306/sonupmandal";
+ //Connection con=DriverManager.getConnection("jdbc:mysql://localhost":3306/sonupmandal",Home.UserName,"");  
+                Connection con=DriverManager.getConnection(conarg,Home.UserName,"");
+//Connection con=DriverManager.getConnection("jdbc:mysql://Home.Sadress:3306/sonupmandal",Home.UserName,"");  
+        Statement stmt=con.createStatement();
+        String query="Select username from users";
+        ResultSet rs=stmt.executeQuery(query);
+        boolean flag=true;
+        while(rs.next()&&flag)
+        {
+            if(rs.getString(1).compareTo(uname)==0)
+                flag=false;
+        }
+        if(flag)
+        {
+            if(Pass.compareTo(cpass)==0)
+        {
+            query = "INSERT INTO users VALUES ('" + uname + "','" + Pass + "','" + fname + "','" + Email + "',0)";
+            stmt.executeUpdate(query);
+            con.close();      
+            JOptionPane.showMessageDialog(null,"Account Created Succesfully !!! \n Back to Login Page");
+
+        }
+        else
+            JOptionPane.showMessageDialog(null,"Password doesn't match");
+        }
+        else
+             JOptionPane.showMessageDialog(null,"Username Already Exists Please Change your Username");
+            }
+            
+        
+        }catch(Exception e)
+        {
+            System.out.println(e);
+        }
+        
+    }

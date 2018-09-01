@@ -1,0 +1,186 @@
+private void BookButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_BookButtonActionPerformed
+        // TODO add your handling code here:
+        try{
+            int day=Integer.parseInt(DayField.getText());
+        int month=Integer.parseInt(MonthField.getText());
+        int year=Integer.parseInt(YearField.getText());
+        int roomno=Integer.parseInt(RoomField.getText());
+     //   String uname =UField.getText();
+     String uname=Home.LogedUserName;
+        String ename=EventName.getText();
+         if(month<0||month>12||day<1||day>31||year<2016||(month==2&&day>=30))
+            JOptionPane.showMessageDialog(null,"Invalid Date");
+         else{
+         Class.forName("com.mysql.jdbc.Driver");
+         String conarg="jdbc:mysql://";
+        conarg+=Home.Saddress;
+        conarg+=":3306/sonupmandal";
+ //Connection con=DriverManager.getConnection("jdbc:mysql://localhost":3306/sonupmandal",Home.UserName,"");  
+                Connection con=DriverManager.getConnection(conarg,Home.UserName,Home.Password);
+       // Connection con=DriverManager.getConnection("jdbc:mysql://Home.Sadress:3306/sonupmandal",Home.UserName,"");
+        Statement stmt=con.createStatement();
+        String query="";
+        query="Select room from roomdetail";
+        ResultSet rs1=stmt.executeQuery(query);
+        boolean blag=false;
+        while(rs1.next())
+        {
+           if(rs1.getInt(1)==roomno)
+           {
+               blag=true;
+               break;
+           }
+        }
+        if(blag)
+        {
+            query="SELECT room,username from bookings where Day='"+day+"' AND Month='"+month+"' AND Year='"+year+"'";
+        ResultSet rs=stmt.executeQuery(query);
+        boolean flag=false;
+        String helduser="";
+        while(rs.next())
+        {
+            System.out.println(rs.getString(1));
+            if(Integer.parseInt(rs.getString(1))==roomno)
+            {
+                flag=true;
+                helduser=rs.getString(2);
+            }
+        }
+        if(!flag)
+        {
+           query="select status from users where username='"+uname+"'";
+         rs=stmt.executeQuery(query);
+         boolean blockeduser=false;
+         while(rs.next())
+         {
+             if(rs.getInt(1)==1)
+             {
+                 blockeduser=true;
+                 break;
+             }
+         }
+         if(!blockeduser)
+         {
+             query="INSERT INTO bookings VALUES ( '"+roomno+"','"+day+"','"+month+"','"+year+"','"+uname+"','"+ename+"') ";
+            int temp=stmt.executeUpdate(query);
+            JOptionPane.showMessageDialog(null,"Succesfully Booked Your Room");
+         }
+         else
+             JOptionPane.showMessageDialog(null,"Sorry\nYou Are Blocked");
+        }
+        else
+            JOptionPane.showMessageDialog(null,"Can't Book this room at this date\n This room is currently Booked by "+helduser+
+                    "\n You Can Contact this user in case they want to sell their Bookings");
+        }
+        else
+           JOptionPane.showMessageDialog(null,"This Room is not yet Available by the admin to book "); 
+         }
+        
+        }catch(Exception e){System.out.println(e);}
+        
+        
+    }//GEN-LAST:event_BookButtonActionPerformed
+
+    private void BackButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_BackButtonActionPerformed
+        // TODO add your handling code here:
+        UserHome uh=new UserHome();
+        this.dispose();
+        uh.setVisible(true);
+    }//GEN-LAST:event_BackButtonActionPerformed
+
+    private void CancelEventActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_CancelEventActionPerformed
+        // TODO add your handling code here:
+        try{
+            int day=Integer.parseInt(DayField.getText());
+        int month=Integer.parseInt(MonthField.getText());
+        int year=Integer.parseInt(YearField.getText());
+        int roomno=Integer.parseInt(RoomField.getText());
+     String uname=Home.LogedUserName;
+         if(month<0||month>12||day<1||day>31||year<2016||(month==2&&day>=30))
+            JOptionPane.showMessageDialog(null,"Invalid Date");
+         else{
+         Class.forName("com.mysql.jdbc.Driver");
+         String conarg="jdbc:mysql://";
+        conarg+=Home.Saddress;
+        conarg+=":3306/sonupmandal";
+                Connection con=DriverManager.getConnection(conarg,Home.UserName,Home.Password);
+        Statement stmt=con.createStatement();
+        String query="";
+        query="Select room from roomdetail";
+        ResultSet rs1=stmt.executeQuery(query);
+        boolean blag=false;
+        while(rs1.next())
+        {
+           if(rs1.getInt(1)==roomno)
+           {
+               blag=true;
+               break;
+           }
+        }
+        if(blag)
+        {
+            query="SELECT room,username from bookings where Day='"+day+"' AND Month='"+month+"' AND Year='"+year+"'";
+        ResultSet rs=stmt.executeQuery(query);
+        boolean flag=false;
+        String helduser="";
+        while(rs.next())
+        {
+            System.out.println(rs.getString(1));
+            if(Integer.parseInt(rs.getString(1))==roomno)
+            {
+                flag=true;
+                helduser=rs.getString(2);
+                
+            }
+        }
+        if(flag)
+        {
+           System.out.println("helduser is "+helduser+"\nuname is "+uname);
+            if(helduser.compareTo(uname)==0)
+            {
+                query="DELETE FROM bookings where Day='"+day+"' AND Month='"+month+"' AND Year='"+year+"' AND room='"+roomno+"'";
+                int ddd=stmt.executeUpdate(query);
+                JOptionPane.showMessageDialog(null,"You have Successfully Canceled your Room");
+            }
+            else
+                JOptionPane.showMessageDialog(null,"You can't Cancel this room ");
+            //My code ends
+        }
+        else
+            JOptionPane.showMessageDialog(null,"This Room is not yet Booked at this date\nSo you cant Cancel");
+        }
+        else
+           JOptionPane.showMessageDialog(null,"Invalid Room "); 
+         }
+        
+        }catch(Exception e){System.out.println(e);}
+        
+        
+    }//GEN-LAST:event_CancelEventActionPerformed
+
+    private void MyBookingsActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_MyBookingsActionPerformed
+        // TODO add your handling code here:
+        String uname=Home.LogedUserName;
+        try{
+        Class.forName("com.mysql.jdbc.Driver");
+         String conarg="jdbc:mysql://";
+        conarg+=Home.Saddress;
+        conarg+=":3306/sonupmandal";
+        Connection con=DriverManager.getConnection(conarg,Home.UserName,Home.Password);
+        String query="Select * from bookings where username='"+uname+"'";
+        Statement stmt=con.createStatement();
+        ResultSet rs=stmt.executeQuery(query);
+        String outp="Room       Date         Username    Event\n";
+        boolean flag=false;
+        while(rs.next())
+        {
+            flag=true;
+            outp+=rs.getString(1)+"       "+rs.getString(2)+"-"+rs.getString(3)+"-"+rs.getString(4)+"   "+rs.getString(5)+"   "+rs.getString(6)+"\n";
+        }
+        if(flag)
+        JOptionPane.showMessageDialog(null,outp);
+        else
+           JOptionPane.showMessageDialog(null,"You haven't Booked Any Event Yet");
+        }catch(Exception e){System.out.println(e);}
+        
+    }
